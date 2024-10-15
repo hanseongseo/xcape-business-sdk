@@ -13,7 +13,7 @@ cloud:
       bucket: xcape-business-sdk-uploads
       json:
         path: json/
-      origin-endpoint: ENC(sWp5Qm8KsZcPAa5hf1Ir5msJAOzZcqFRHjL0TTrA8meVxkkGNvC4E8kkSHAHJVUnvAz50dg1UUK0yTLFt+mEMKaXwiMjf5nEWM25j22pS5k=)
+      origin-endpoint: ENC(XduLH5YfFldnGiCdsDxReYusC9cDYgtuB0YKTeZrsGLhJpaMBPzhUSk16fsr5vRmQUl+P51fVekC+B8uqKrsWYLY1gFdQ34PjK9IQJOvd0M=)
       cloud-front-endpoint: ENC(RNDeTk90JhA8KZiHFRykchS583TzjUU7+hO4g949KI+CrjSrEvfrYsR4rgS2oWs6)
 
 ---
