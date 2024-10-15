@@ -13,14 +13,16 @@ cloud:
       bucket: xcape-business-sdk-uploads
       json:
         path: json/
+      origin-endpoint: ENC(sWp5Qm8KsZcPAa5hf1Ir5msJAOzZcqFRHjL0TTrA8meVxkkGNvC4E8kkSHAHJVUnvAz50dg1UUK0yTLFt+mEMKaXwiMjf5nEWM25j22pS5k=)
+      cloud-front-endpoint: ENC(RNDeTk90JhA8KZiHFRykchS583TzjUU7+hO4g949KI+CrjSrEvfrYsR4rgS2oWs6)
 
 ---
 spring:
   datasource:
-    url: ENC(e+ME8BY3ag2bj5e20HFoyAfKjSrHYfFqCXicQfQZrgCX4QOt4+JnXDnvUgkYtZwa)
+    url: ENC(DRHELuiVgs9T+6S6D4ugFdPNwAfsVRUuXPw5I7fN42ZsxDjT5bpQ3qclpbJm1yFX)
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ENC(NqbwI0XMelh8t3DnYbQl8g==)
-    password: ENC(YU+PUj5gs51NANrxD1T9yvQEpghqr1My)
+    username: ENC(Qq07MPccudPTux6ZD6Womw==)
+    password: ENC(Y+SSOYUaJat/NqxuNvbRYxljnnxNyaBn)
 
   jpa:
     hibernate:
@@ -40,6 +42,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 50MB
+      max-request-size: 50MB
   config:
     activate:
       on-profile: local
