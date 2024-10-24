@@ -92,9 +92,9 @@ public class ApiRestController {
 
     @GetMapping("/reservation-histories/{reservationId}")
     public Response<ReservationHistoryDto> getReservationHistoryList(@PathVariable String reservationId) {
-        ReservationHistoryDto reservationDto = reservationHistoryService.getReservationHistory(reservationId);
+        ReservationHistoryDto reservationHistoryDto = reservationHistoryService.getReservationHistory(reservationId);
 
-        return Response.success(reservationDto);
+        return Response.success(reservationHistoryDto);
     }
 
     @GetMapping("/themes")

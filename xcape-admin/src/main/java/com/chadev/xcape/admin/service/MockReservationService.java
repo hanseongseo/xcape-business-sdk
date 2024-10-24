@@ -2,7 +2,7 @@ package com.chadev.xcape.admin.service;
 
 import com.amazonaws.util.CollectionUtils;
 import com.chadev.xcape.admin.controller.request.RangeMockReservationRequest;
-import com.chadev.xcape.core.domain.dto.ReservationDto;
+import com.chadev.xcape.core.domain.dto.ReservationDetailDto;
 import com.chadev.xcape.core.domain.entity.Reservation;
 import com.chadev.xcape.core.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +25,12 @@ public class MockReservationService {
         List<Reservation> mockReservationList = reservationList.stream()
                                                                .filter(reservation -> !reservation.getIsReserved())
                                                                .peek((reservation -> {
-                                                                   ReservationDto mockReservationDto = ReservationDto.fake(reservation);
-                                                                   reservation.setIsReserved(mockReservationDto.getIsReserved());
-                                                                   reservation.setReservedBy(mockReservationDto.getReservedBy());
-                                                                   reservation.setPhoneNumber(mockReservationDto.getPhoneNumber());
-                                                                   reservation.setPrice(mockReservationDto.getPrice());
-                                                                   reservation.setParticipantCount(mockReservationDto.getParticipantCount());
+                                                                   ReservationDetailDto mockReservationDetailDto = ReservationDetailDto.fake(reservation);
+                                                                   reservation.setIsReserved(mockReservationDetailDto.getIsReserved());
+                                                                   reservation.setReservedBy(mockReservationDetailDto.getReservedBy());
+                                                                   reservation.setPhoneNumber(mockReservationDetailDto.getPhoneNumber());
+                                                                   reservation.setPrice(mockReservationDetailDto.getPrice());
+                                                                   reservation.setParticipantCount(mockReservationDetailDto.getParticipantCount());
                                                                    if (unreservedTime != null) {
                                                                        reservation.setUnreservedTime(reservation.getTime().minusMinutes(unreservedTime));
                                                                    }
