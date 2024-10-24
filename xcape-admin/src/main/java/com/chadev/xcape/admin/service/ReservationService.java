@@ -1,7 +1,7 @@
 package com.chadev.xcape.admin.service;
 
 import com.chadev.xcape.core.domain.converter.DtoConverter;
-import com.chadev.xcape.core.domain.dto.ReservationDto;
+import com.chadev.xcape.core.domain.dto.ReservationDetailDto;
 import com.chadev.xcape.core.domain.dto.ThemeDto;
 import com.chadev.xcape.core.domain.dto.history.ReservationHistoryDto;
 import com.chadev.xcape.core.domain.entity.*;
@@ -59,12 +59,12 @@ public class ReservationService {
         themeListByMerchantId.stream()
                              .filter(Theme::getUseYn)
                              .forEach(theme -> {
-                                 List<ReservationDto> reservationListByThemeId =
+                                 List<ReservationDetailDto> reservationListByThemeId =
                                          reservationListByMerchantId.stream()
                                                                     .filter(reservation -> Objects.equals(theme.getId(), reservation.getThemeId()))
-                                                                    .map(dtoConverter::toReservationDto).collect(Collectors.toList());
+                                                                    .map(dtoConverter::toReservationDetailDto).collect(Collectors.toList());
                                  ThemeDto themeDto = dtoConverter.toThemeDto(theme);
-                                 themeDto.setReservationList(reservationListByThemeId);
+                                 themeDto.setReservationDetailList(reservationListByThemeId);
                                  resultThemeList.add(themeDto);
                              });
 
@@ -73,7 +73,7 @@ public class ReservationService {
 
     // 예약 등록/수정
     @Transactional
-    public ReservationDto registerReservationById(String reservationId, ReservationRequest request) {
+    public ReservationDetailDto registerReservationById(String reservationId, ReservationRequest request) {
         log.info("""
                 registerReservationById >>>> request
                 reservedBy: {}
@@ -125,7 +125,7 @@ public class ReservationService {
             }
         }
 
-        return dtoConverter.toReservationDto(savedReservation);
+        return dtoConverter.toReservationDetailDto(savedReservation);
     }
 
     // 예약 취소
@@ -133,7 +133,7 @@ public class ReservationService {
     public void cancelReservationById(String reservationId) {
         log.info("cancelReservationById >>>> reservationId: {}", reservationId);
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(IllegalArgumentException::new);
-        ReservationDto reservationDto = dtoConverter.toReservationDto(reservation);
+        ReservationDetailDto reservationDetailDto = dtoConverter.toReservationDetailDto(reservation);
 
         reservationHistoryRepository.save(ReservationHistory.cancel(reservation));
         reservation.setIsReserved(false);
@@ -145,10 +145,10 @@ public class ReservationService {
         reservationRepository.save(reservation);
 
         if (reservation.getRoomType() != null && reservation.getRoomType().is(RoomType.OPEN_ROOM)) {
-            reservationDto.setPrice(0);
+            reservationDetailDto.setPrice(0);
         }
 
-        NotificationTemplateEnum.ReservationCancelParam reservationCancelParam = reservationDto.getReservationCancelParam(objectMapper);
+        NotificationTemplateEnum.ReservationCancelParam reservationCancelParam = reservationDetailDto.getReservationCancelParam(objectMapper);
         KakaoTalkResponse kakaoTalkResponse = kakaoTalkNotification.sendMessage(CANCEL_RESERVATION.getKakaoTalkRequest(reservationCancelParam));
         if (!kakaoTalkResponse.getHeader().isSuccessful) {
             SmsResponse smsResponse = smsNotification.sendMessage(CANCEL_RESERVATION.getSmsRequest(reservationCancelParam));
@@ -159,8 +159,8 @@ public class ReservationService {
     }
 
     // 예약 상세 조회
-    public ReservationDto getReservation(String reservationId) {
-        return new ReservationDto(reservationRepository.findById(reservationId).orElseThrow(IllegalArgumentException::new));
+    public ReservationDetailDto getReservation(String reservationId) {
+        return new ReservationDetailDto(reservationRepository.findById(reservationId).orElseThrow(IllegalArgumentException::new));
     }
 
     // 지점별 빈 예약 생성
@@ -211,19 +211,19 @@ public class ReservationService {
         LocalTime startTime = targetTime.minusMinutes(2);
         LocalTime endTime = targetTime.plusMinutes(2);
 
-        List<ReservationDto> reservationDtoList = reservationRepository.findByIsReservedAndDateAndTimeBetweenAndRoomType(true, today, startTime, endTime, RoomType.GENERAL)
+        List<ReservationDetailDto> reservationDetailDtoList = reservationRepository.findByIsReservedAndDateAndTimeBetweenAndRoomType(true, today, startTime, endTime, RoomType.GENERAL)
                 .stream()
-                .map(dtoConverter::toReservationDto)
+                .map(dtoConverter::toReservationDetailDto)
                 .toList();
 
-        if (CollectionUtils.isEmpty(reservationDtoList)) {
+        if (CollectionUtils.isEmpty(reservationDetailDtoList)) {
             return;
         }
 
         List<NotificationTemplateEnum.ReservationRemindParam> reservationRemindParamList = new ArrayList<>();
 
-        for (ReservationDto reservationDto : reservationDtoList) {
-            reservationRemindParamList.add(reservationDto.getReservationRemindParam(objectMapper));
+        for (ReservationDetailDto reservationDetailDto : reservationDetailDtoList) {
+            reservationRemindParamList.add(reservationDetailDto.getReservationRemindParam(objectMapper));
         }
 
         KakaoTalkResponse kakaoTalkResponse = kakaoTalkNotification.sendMessage(REMIND_RESERVATION.getKakaoTalkRequest(reservationRemindParamList));

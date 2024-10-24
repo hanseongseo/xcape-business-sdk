@@ -31,6 +31,10 @@ public class DtoConverter {
         return themeDto;
     }
 
+    public ReservationDetailDto toReservationDetailDto(Reservation entity) {
+        return new ReservationDetailDto(entity);
+    }
+
     public ReservationDto toReservationDto(Reservation entity) {
         return new ReservationDto(entity);
     }

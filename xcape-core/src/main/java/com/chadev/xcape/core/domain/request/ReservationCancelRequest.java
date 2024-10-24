@@ -1,6 +1,6 @@
 package com.chadev.xcape.core.domain.request;
 
-import com.chadev.xcape.core.domain.dto.ReservationDto;
+import com.chadev.xcape.core.domain.dto.ReservationDetailDto;
 import com.chadev.xcape.core.service.notification.NotificationTemplateEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -20,17 +20,17 @@ public class ReservationCancelRequest {
 
     private String recipientNo;
 
-    public NotificationTemplateEnum.ReservationCancelParam getReservationCancelParam(ReservationDto reservationDto, ObjectMapper objectMapper) {
+    public NotificationTemplateEnum.ReservationCancelParam getReservationCancelParam(ReservationDetailDto reservationDetailDto, ObjectMapper objectMapper) {
         return new NotificationTemplateEnum.ReservationCancelParam(
-                reservationDto.getPhoneNumber(),
-                reservationDto.getDate().toString(),
-                reservationDto.getTime(),
-                reservationDto.getMerchantName(),
-                reservationDto.getThemeName(),
-                reservationDto.getReservedBy(),
-                reservationDto.getPhoneNumber(),
-                reservationDto.getParticipantCount().toString(),
-                reservationDto.getPrice().toString() + "원",
+                reservationDetailDto.getPhoneNumber(),
+                reservationDetailDto.getDate().toString(),
+                reservationDetailDto.getTime(),
+                reservationDetailDto.getMerchantName(),
+                reservationDetailDto.getThemeName(),
+                reservationDetailDto.getReservedBy(),
+                reservationDetailDto.getPhoneNumber(),
+                reservationDetailDto.getParticipantCount().toString(),
+                reservationDetailDto.getPrice().toString() + "원",
                 objectMapper
         );
     }

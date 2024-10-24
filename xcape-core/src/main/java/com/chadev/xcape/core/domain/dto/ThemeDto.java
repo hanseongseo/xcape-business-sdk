@@ -39,7 +39,7 @@ public class ThemeDto {
     private List<TimetableDto> timeTableList;
     private List<PriceDto> priceList;
     private List<AbilityDto> abilityList;
-    private List<ReservationDto> reservationList;
+    private List<ReservationDetailDto> reservationDetailList;
     private List<HintDto> hintList;
 
     public ThemeDto(Theme entity) {
