@@ -82,7 +82,13 @@ document.querySelector('#uploadButton').addEventListener('click', () => {
                 alert('업로드 실패😭');
             }
         })
-        .catch((error) => console.error(error))
+        .catch((error) => {
+            console.error(error);
+            const {status} = error.response;
+            if (status === 413) {
+                alert('파일 사이즈가 큽니다.');
+            }
+        });
 });
 
 getStorageList();
