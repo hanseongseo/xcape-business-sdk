@@ -35,9 +35,7 @@ public class S3Uploader {
     // S3로 파일 업로드하기
     private String upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + uploadFile.getName();   // S3에 저장된 파일 이름
-        String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
-        removeNewFile(uploadFile);
-        return uploadImageUrl;
+        return putS3(uploadFile, fileName);
     }
 
     // S3로 업로드
@@ -58,14 +56,10 @@ public class S3Uploader {
     private Optional<File> convert(MultipartFile multipartFile) throws IOException {
         File convertFile = new File(System.getProperty("user.dir") + "/" + multipartFile.getOriginalFilename());
         // 바로 위에서 지정한 경로에 File이 생성됨 (경로가 잘못되었다면 생성 불가능)
-        if (convertFile.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) { // FileOutputStream 데이터를 파일에 바이트 스트림으로 저장하기 위함
-                fos.write(multipartFile.getBytes());
-            }
-            return Optional.of(convertFile);
+        try (FileOutputStream fos = new FileOutputStream(convertFile)) { // FileOutputStream 데이터를 파일에 바이트 스트림으로 저장하기 위함
+            fos.write(multipartFile.getBytes());
         }
-
-        return Optional.empty();
+        return Optional.of(convertFile);
     }
 
     public boolean doesExist(String directoryPath, String objectName) {
