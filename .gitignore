@@ -183,3 +183,4 @@ node_modules
 
 serviceAccountKeyDev.json
 serviceAccountKeyProd.json
+firebase.js
