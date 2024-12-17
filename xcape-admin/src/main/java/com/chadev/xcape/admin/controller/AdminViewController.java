@@ -158,9 +158,4 @@ public class AdminViewController {
         model.addAttribute("merchantList", merchantList);
         return "tag-settings";
     }
-
-    @GetMapping("/migration")
-    public String migration() {
-        return "migration";
-    }
 }
