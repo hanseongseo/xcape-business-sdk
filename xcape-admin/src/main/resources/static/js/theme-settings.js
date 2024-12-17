@@ -79,6 +79,11 @@ document.querySelector('#saveThemeButton').addEventListener('click', () => {
             } else {
                 alert('저장 중 에러가 발생했습니다. 😭')
             }
+        }).catch((e) => {
+            const {status} = e.response;
+            if (status === 413) {
+                alert('파일 사이즈가 큽니다.');
+            }
         }).finally(() => {
             saveThemeButton.disabled = false;
             saveThemeButton.innerHTML = '저장';
