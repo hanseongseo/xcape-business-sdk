@@ -446,7 +446,6 @@ firebase
                     const {isPlaying, endTime, runningTime} = themeStatus;
                     if (isPlaying) {
                         const {status, time} = formatTimeString(endTime - new Date().getTime());
-                        console.log(status, time)
                         if (status === 'increase') {
                             e.classList.add('text-danger');
                             e.classList.remove('text-primary', 'text-warning');
