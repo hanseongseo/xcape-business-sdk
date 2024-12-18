@@ -9,6 +9,25 @@ const toastType = {
 }
 
 const gameStatus = {};
+
+const numbering = () => {
+    const numberArea = document.querySelector('#numberArea');
+    let maxLength = 0;
+    document.querySelectorAll(".theme").forEach((theme) => {
+        maxLength = Math.max(maxLength, theme.querySelectorAll(".reservation").length);
+    });
+    for (let i = 0; i < maxLength; i++) {
+        const numberDiv = document.createElement("div");
+        numberDiv.style.width = "60px";
+        numberDiv.style.height = "78px";
+        ['text-center', 'bg-dark', 'mb-1', 'align-items-center', 'd-flex', 'justify-content-center'].forEach((className) => {
+            numberDiv.classList.add(className);
+        });
+        numberDiv.textContent = 'Time' + (i + 1);
+        numberArea.appendChild(numberDiv);
+    }
+}
+
 document.querySelector('#datePicker').value = location.search.includes('date=') ? location.search.split('date=')[1].substring(0, 10) : formatDateToIso(new Date());
 const date = document.querySelector('#datePicker').value;
 
@@ -407,9 +426,7 @@ const formatTimeString = (time) => {
 
     let seconds = Math.floor(time / 1000);
     let minutes = Math.floor(time / 60000);
-    // let hours = Math.floor(time / 3600000);
     seconds = seconds - minutes * 60;
-    // minutes = minutes - hours * 60;
 
     return {
         status,
@@ -417,17 +434,45 @@ const formatTimeString = (time) => {
             seconds < 10 ? 0 : ''
         }${seconds}`
     }
-
-    // if (status === 'increase') {
-    //     return `+ ${minutes < 10 ? 0 : ''}${minutes}:${
-    //         seconds < 10 ? 0 : ''
-    //     }${seconds}`;
-    // }
-    //
-    // return `${minutes < 10 ? 0 : ''}${minutes}:${
-    //     seconds < 10 ? 0 : ''
-    // }${seconds}`;
 };
+
+numbering();
+
+document.querySelectorAll('.merchant-button').forEach(merchantButton => {
+    if (merchantId === merchantButton.value) {
+        merchantButton.classList.add("active");
+    }
+})
+
+document.querySelectorAll('.reservedBy').forEach(reservedBy => {
+    let isFake = false;
+    fakeReservedBy.forEach(keyword => {
+        if (reservedBy.textContent.includes(keyword)) {
+            isFake = true;
+        }
+    });
+    const unreservedTime = reservedBy.getAttribute('unreserved-time');
+    if (isFake) {
+        reservedBy.textContent = 'X';
+    }
+    if (reservedBy.getAttribute('unreserved-time') !== null) {
+        const date = new Date();
+        const compared = new Date(date.getFullYear(), date.getMonth(), date.getDate(), parseInt(unreservedTime.split(':')[0]), parseInt(unreservedTime.split(':')[1]));
+
+        if ((compared.getTime() - date.getTime()) > 0) {
+            reservedBy.setAttribute('fake', 'Y');
+            reservedBy.textContent = parseInt((compared.getTime() - date.getTime()) / 1000 / 60) + '분전';
+        }
+    }
+});
+
+const getTimerStatus = ({isPlayingPrevious, isPlayingCurrent}) => {
+    if (!isPlayingPrevious && isPlayingCurrent) {
+        return 'start';
+    } else if (isPlayingPrevious && !isPlayingCurrent) {
+        return 'end';
+    }
+}
 
 firebase
     .database()
@@ -435,9 +480,23 @@ firebase
     .get()
     .then((snapshot) => {
         Object.values(snapshot.val()).forEach((value) => {
-            const {id} = value;
+            const {id, isPlaying, endTime, nameKo} = value;
             gameStatus[`theme-${id}`] = value;
+
+            const targetThemeTimer = document.querySelector(`.running-time[data-theme-id="${id}"]`);
+            if (targetThemeTimer && isPlaying) {
+                targetThemeTimer.innerHTML = loadingSpinner;
+
+                if (endTime === new Date().getTime()) {
+                    showToasts({
+                        themeName: nameKo,
+                        recentStartTime: formatDateTimeToKr(new Date(endTime)),
+                        type: 'timeOver'
+                    });
+                }
+            }
         });
+
         setInterval(() => {
             document.querySelectorAll('.running-time').forEach((e) => {
                 const {themeId} = e.dataset;
@@ -469,7 +528,31 @@ firebase
     .database()
     .ref('/gameStatus')
     .on('child_changed', snapShot => {
-        const {id, isPlaying, endTime} = snapShot.val();
+        const {id, isPlaying, endTime, nameKo} = snapShot.val();
+
+        const targetThemeTimer = document.querySelector(`.running-time[data-theme-id="${id}"]`);
+        const param = {
+            isPlayingPrevious: gameStatus[`theme-${id}`].isPlaying,
+            isPlayingCurrent: isPlaying,
+        }
+        const status = getTimerStatus(param);
+
+        if (targetThemeTimer) {
+            if (status === 'start') {
+                showToasts({
+                    themeName: nameKo,
+                    recentStartTime: formatDateTimeToKr(new Date()),
+                    type: 'start'
+                });
+            } else if (status === 'end') {
+                showToasts({
+                    themeName: nameKo,
+                    recentStartTime: formatDateTimeToKr(new Date()),
+                    type: 'end'
+                });
+            }
+        }
+
         gameStatus[`theme-${id}`].isPlaying = isPlaying;
         gameStatus[`theme-${id}`].endTime = endTime;
     });
